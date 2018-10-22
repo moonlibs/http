@@ -90,8 +90,10 @@ Issue an HTTP request at the given URL (`url`).
 If `body` is `nil`, the body is an empty string, otherwise
 the string passed in `body`.
 
-`opts` is an optional Lua table with methods, which may contain `headers` keys
-with additional HTTP headers to send to the server.
+`opts` is an optional Lua table with methods, which may contain
+* `headers` keys with additional HTTP headers to send to the server
+* `conn_timeout` - timeout for tcp connect ( default value == 1 )
+* `read_timeout` - timeout for reading from socket ( default value == 1 )
 
 Returns a Lua table with:
 

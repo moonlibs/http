@@ -26,6 +26,9 @@ local function request(method, urlstr, body, opts)
         opts = {}
     end
 
+    local conn_timeout = opts.conn_timeout or 1;
+    local read_timeout = opts.read_timeout or 1;
+
     local hdrs = opts.headers
     if hdrs == nil then
         hdrs = {}
@@ -57,7 +60,7 @@ local function request(method, urlstr, body, opts)
         url.service = 80
     end
 
-    local s = socket.tcp_connect(url.host, url.service)
+    local s = socket.tcp_connect(url.host, url.service, conn_timeout)
     if s == nil then
         return retcode(595, errno.strerror())
     end
@@ -112,7 +115,7 @@ local function request(method, urlstr, body, opts)
         return retcode(595, errno.strerror())
     end
 
-    local resp = s:read{line = { "\r\n\r\n"} }
+    local resp = s:read{{line = {"\r\n\r\n"}}, read_timeout}
     if resp == nil then
         return retcode(595, "Can't read response headers")
     end
@@ -126,7 +129,7 @@ local function request(method, urlstr, body, opts)
     if resp.headers['transfer-encoding'] == 'chunked' then
         local body = {}
         while true do
-            local data = s:read("\r\n")
+            local data = s:read("\r\n", read_timeout)
             if not data then
                 break
             end
@@ -136,14 +139,14 @@ local function request(method, urlstr, body, opts)
             end
             if len == 0 then
                 -- no more chunks
-                if s:read(2) ~= "\r\n" then
+                if s:read(2, read_timeout) ~= "\r\n" then
                     break
                 end
                 resp.body = table.concat(body)
                 break
             end
-            local chunk = s:read(len)
-            if not chunk or s:read(2) ~= "\r\n" then
+            local chunk = s:read(len, read_timeout)
+            if not chunk or s:read(2, read_timeout) ~= "\r\n" then
                 break
             end
             table.insert(body, chunk)
@@ -151,7 +154,7 @@ local function request(method, urlstr, body, opts)
     elseif resp.headers['content-length'] ~= nil then
         local len = tonumber(resp.headers['content-length'])
         if len then
-            resp.body = s:read(len)
+            resp.body = s:read(len, read_timeout)
         end
     elseif resp.status == 204 then
         -- 204: No Content
