@@ -1,12 +1,12 @@
 package = 'http'
 version = 'scm-1'
 source  = {
-    url    = 'git://github.com/tarantool/http.git',
+    url    = 'git://github.com/moonlibs/http.git',
     branch = 'tarantool-1.6-timeout',
 }
 description = {
     summary  = "Tarantool module for HTTP client/server.",
-    homepage = 'https://github.com/tarantool/http/',
+    homepage = 'https://github.com/moonlibs/http/',
     license  = 'BSD',
 }
 dependencies = {
