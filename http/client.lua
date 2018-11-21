@@ -115,7 +115,7 @@ local function request(method, urlstr, body, opts)
         return retcode(595, errno.strerror())
     end
 
-    local resp = s:read{{line = {"\r\n\r\n"}}, read_timeout}
+    local resp = s:read{line = {"\r\n\r\n"}, read_timeout}
     if resp == nil then
         return retcode(595, "Can't read response headers")
     end
