@@ -26,8 +26,8 @@ local function request(method, urlstr, body, opts)
         opts = {}
     end
 
-    local conn_timeout = opts.conn_timeout or 1;
-    local read_timeout = opts.read_timeout or 1;
+    local conn_timeout = opts.conn_timeout or 3;
+    local read_timeout = opts.read_timeout or 3;
 
     local hdrs = opts.headers
     if hdrs == nil then
